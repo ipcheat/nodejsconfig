@@ -25,12 +25,29 @@ var Config = function (encoding) {
         if (s.length > 0) {
             try {
                 s = s.replace(_regx, __EmptyString);
-                re = eval("(" + s + ")");
+                re = JSON.parse(s);
             } catch (e) {
                 console.log(re);
             };
         }
         return re;
+    }
+    
+    var getStringFromFile = function (file, encoding) {
+        
+        var buf = fs.readFileSync(file);
+                
+        //console.log(buf);
+        
+        var s = __EmptyString;
+        if (buf[0].toString(16) == 'ef' && buf[1].toString(16) == 'bb' && buf[2].toString(16) == 'bf') {//UTF-8 BOM头
+            s = buf.toString(encoding, 3);
+        } else {
+            s = buf.toString(encoding);
+        }
+        
+        return s;
+    
     }
     
     var getObjFromFile = (function () {
@@ -48,7 +65,7 @@ var Config = function (encoding) {
                 if (!fs.existsSync(p))
                     return null;
                 
-                _content = _parseObj(fs.readFileSync(p, _encoding));
+                _content = _parseObj(getStringFromFile(p, _encoding));
                 _mtime = fs.statSync(p).mtime.getTime();
 
             }
@@ -59,7 +76,7 @@ var Config = function (encoding) {
                     return null;
                 
                 if (stat.mtime.getTime() != _mtime) {
-                    _content = _parseObj(fs.readFileSync(p, _encoding));
+                    _content = _parseObj(getStringFromFile(p, _encoding));
                     _mtime = stat.mtime.getTime();
                 }
                                 
@@ -77,7 +94,7 @@ var Config = function (encoding) {
         var o = getObjFromFile(__ConfigFile);
         if (o && typeof o[key] != 'undefined') {
             return o[key];
-        }        
+        }
         return __EmptyString;
     }
 

@@ -2,7 +2,7 @@
   "name": "nodejsconfig",
   "version": "0.0.1",
   "description": "基于文本文件的配置管理",
-  "main": "test.js",
+  "main": "configcore.js",
   "author": {
     "name": "cjm",
     "email": "cuiming@yeah.net"
